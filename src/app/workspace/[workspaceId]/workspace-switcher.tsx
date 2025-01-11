@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWorkspaceId } from "@/hooks/use-workspace-id"
 import { useCreateWorkspaceModal } from "@/features/workspaces/store/use-create-workspace-modal";
 
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,14 +29,14 @@ const WorkspaceSwithcher = () => {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger>
-                <div className="flex justify-center items-center rounded-lg size-9 relative overflow-hidden bg-[#ABABAB] hover:bg-[#ABABAB]/80 text-slate-800 font-semibold text-xl">
+            <DropdownMenuTrigger asChild>
+                <Button className="size-9 relative overflow-hidden bg-[#ABABAB] hover:bg-[#ABABAB]/80 text-slate-800 font-semibold text-xl">
                     {workspaceLoading ? (
                         <Loader className="size-5 animate-spin shrink-0" />
                     ) : (
                         workspace?.name.charAt(0).toUpperCase()
                     )}
-                </div>           
+                </Button>           
             </DropdownMenuTrigger>
 
             <DropdownMenuContent side="bottom" align="start" className="w-64">

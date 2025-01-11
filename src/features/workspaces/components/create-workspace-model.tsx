@@ -21,8 +21,8 @@ export const CreateWorkspaceModel = () => {
 
     const { mutate, isPending, isError, isSuccess } = useCreateWorkspace();
 
-    const handleClose = () => {
-        toast.success("Workspace created")
+    const handleClose = (id: any) => {
+        if(id) toast.success("Workspace created")
         setOpen(false);
         setName("");
     }
@@ -33,7 +33,7 @@ export const CreateWorkspaceModel = () => {
         mutate({ name }, {
             onSuccess(id){
                 router.push(`/workspace/${id}`);
-                handleClose();
+                handleClose(id);
             }
         });
     }
