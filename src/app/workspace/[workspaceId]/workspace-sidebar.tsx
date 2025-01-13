@@ -1,5 +1,6 @@
-import { AlertTriangle, Loader } from "lucide-react";
+import { AlertTriangle, Loader, MessageSquareText, SendHorizonal } from "lucide-react";
 
+import SidebarItem from "./sidebar-item";
 import WorkspaceHeader from "./workspace-header";
 
 import { useCurrentMember } from "@/features/members/api/use-current-members";
@@ -31,6 +32,18 @@ const WorkspaceSidebar = () => {
   return (
     <div className="flex flex-col bg-[#5e2c5f] h-full">
       <WorkspaceHeader workspace={workspace} isAdmin={member.role === "admin"}/>
+      <div className="flex flex-col px-2 mt-3">
+        <SidebarItem
+          label="Threads"
+          icon={MessageSquareText}
+          id="threads"
+        />
+        <SidebarItem
+          label="Drafts & Sent"
+          icon={SendHorizonal}
+          id="drafts"
+        />
+      </div>
     </div>
   )
 }
