@@ -37,6 +37,7 @@ const WorkspaceSection = ({
                 <Button
                     variant="transparent"
                     size="sm"
+                    onClick={toggle}
                     className="group px-1.5 text-sm text-[#f9edffcc] h-[28px] justify-start overflow-hidden items-center"
                 >
                     <span className="truncate">{label}</span>
