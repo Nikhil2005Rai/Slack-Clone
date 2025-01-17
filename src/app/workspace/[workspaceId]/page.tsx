@@ -2,7 +2,7 @@
 
 import { Loader, TriangleAlert } from "lucide-react";
 import { useMemo, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal";
 import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace";
@@ -45,7 +45,7 @@ const WorkspaceIdPage =  () => {
     workspaceId,
   ]);
 
-  if(workspaceLoading || channelsLoading) {
+  if(workspaceLoading || channelsLoading || memberLoading) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <Loader className="size-6 animate-spin text-muted-foreground"/>
@@ -53,7 +53,7 @@ const WorkspaceIdPage =  () => {
     )
   }
 
-  if(!workspace) {
+  if(!workspace || !member) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <TriangleAlert className="size-6 text-muted-foreground" />
