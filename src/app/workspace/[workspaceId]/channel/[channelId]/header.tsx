@@ -21,6 +21,7 @@ import {
 import { useChannelId } from "@/hooks/use-channel-id";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
+import { useCurrentMember } from "@/features/members/api/use-current-members";
 
 interface HeaderProps {
     title: string;
@@ -38,8 +39,15 @@ const Header = ({ title }: HeaderProps) => {
     const [value, setValue] = useState(title);
     const [editOpen, setEditOpen] = useState(false)
 
+    const { data: member } = useCurrentMember({ workspaceId });
     const { mutate: updateChannel, isPending: isUpdatingChannel } = useUpdateChannel();
     const { mutate: removeChannel, isPending: isRemovingChannel } = useRemoveChannel();
+
+    const handleEditOpen = (value: boolean) => {
+        if (member?.role !== "admin") return;
+
+        setEditOpen(true);
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.replace(/\s+/g, "-").toLowerCase();
@@ -49,7 +57,7 @@ const Header = ({ title }: HeaderProps) => {
     const handleDelete = async () => {
         const ok = await confirm();
 
-        if(!ok) return;
+        if (!ok) return;
 
         removeChannel({ id: channelId }, {
             onSuccess: () => {
@@ -97,12 +105,15 @@ const Header = ({ title }: HeaderProps) => {
                         </DialogTitle>
                     </DialogHeader>
                     <div className="px-4 pb-4 flex flex-col gap-y-2">
-                        <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                        <Dialog open={editOpen} onOpenChange={handleEditOpen}>
                             <DialogTrigger asChild>
                                 <div className="px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-semibold">Channel name</p>
-                                        <p className="text-sm text-[#1264a3] hover:underline font-semibold">Edit</p>
+                                        {member?.role === "admin" && (
+
+                                            <p className="text-sm text-[#1264a3] hover:underline font-semibold">Edit</p>
+                                        )}
                                     </div>
                                     <p className="text-sm"># {title}</p>
                                 </div>
@@ -112,7 +123,7 @@ const Header = ({ title }: HeaderProps) => {
                                     <DialogTitle>Rename this channel</DialogTitle>
                                 </DialogHeader>
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    <Input 
+                                    <Input
                                         value={value}
                                         disabled={isUpdatingChannel}
                                         onChange={handleChange}
@@ -120,30 +131,32 @@ const Header = ({ title }: HeaderProps) => {
                                         autoFocus
                                         minLength={3}
                                         maxLength={80}
-                                        placeholder="e.g. plan-budget" 
+                                        placeholder="e.g. plan-budget"
                                     />
-                                <DialogFooter>
-                                    <DialogClose asChild>
-                                        <Button
-                                            variant="outline"
-                                            disabled={isUpdatingChannel}
-                                        >
-                                            Cancel
-                                        </Button>
-                                    </DialogClose>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button
+                                                variant="outline"
+                                                disabled={isUpdatingChannel}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </DialogClose>
                                         <Button disabled={isUpdatingChannel}>Save</Button>
-                                </DialogFooter>
+                                    </DialogFooter>
                                 </form>
                             </DialogContent>
                         </Dialog>
-                        <button
-                            onClick={handleDelete}
-                            disabled={isRemovingChannel}
-                            className="flex items-center gap-x-2 px-5 py-4 bg-white rouded-lg cursor-pointer border hover:bg-gray-50 text-rose-600"
-                        >
-                            <TrashIcon className="size-4" />
-                            <p className="text-sm font-semibold">Delete channel</p>
-                        </button>
+                        {member?.role === "admin" && (
+                            <button
+                                onClick={handleDelete}
+                                disabled={isRemovingChannel}
+                                className="flex items-center gap-x-2 px-5 py-4 bg-white rouded-lg cursor-pointer border hover:bg-gray-50 text-rose-600"
+                            >
+                                <TrashIcon className="size-4" />
+                                <p className="text-sm font-semibold">Delete channel</p>
+                            </button>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>
