@@ -1,6 +1,6 @@
 "use client"
 
-import { 
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
@@ -28,7 +28,7 @@ export const Hint = ({
                 </TooltipTrigger>
                 <TooltipContent side={side} align={align} className="bg-black text-white boarder border-white/5">
                     <p className="font-medium text-xs">
-                        { label }
+                        {label}
                     </p>
                 </TooltipContent>
             </Tooltip>
