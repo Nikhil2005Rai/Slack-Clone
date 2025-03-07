@@ -2,6 +2,7 @@ import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 
 import { GetMessagesReturnType } from "@/features/messages/api/use-get-messages";
 import { Message } from "./message";
+import { ChannelHero } from "./channel-hero";
 
 const TIME_THRESHOLD = 5;
 
@@ -84,7 +85,7 @@ export const MessageList = ({
                                 isEditing={false}
                                 setEditingId={() => {}}
                                 isCompact={isCompact}
-                                hideThreadButton={false}
+                                hideThreadButton={variant === "thread"}
                                 threadCount={message.threadCount}
                                 threadImage={message.threadImage}
                                 threadTimestamp={message.threadTimestamp}
@@ -93,6 +94,12 @@ export const MessageList = ({
                     })}
                 </div>
             ))}
+            {variant === "channel" && channelName && channelCreationTime && (
+                <ChannelHero 
+                    name={channelName}
+                    creationTime={channelCreationTime}
+                />
+            )}
         </div>
     )
 }
