@@ -12,4 +12,4 @@ export const useGetMessage = ({ id }: UseGetMessageProps) => {
     const isLoading = data === undefined;
 
     return {data, isLoading};
-}
+};
