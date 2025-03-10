@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
+import { useCurrentMember } from "@/features/members/api/use-current-members";
 
 //cva comes with shadcn to define variants of styles
 const sidebarItemVariants = cva(
@@ -37,7 +38,11 @@ const SidebarItem = ({
     variant
 }: SidebarItemProps) => {
     const workspaceId = useWorkspaceId();
+    const member = useCurrentMember({ workspaceId });
 
+    const href = ["threads", "drafts"].includes(id)
+        ? `/workspace/${workspaceId}/member/${member?.data?._id}`
+        : `/workspace/${workspaceId}/channel/${id}`;
     return (
         <Button
             variant="transparent"
@@ -45,7 +50,7 @@ const SidebarItem = ({
             className={cn(sidebarItemVariants({ variant }))}
             asChild
         >
-            <Link href={`/workspace/${workspaceId}/channel/${id}`}>
+            <Link href={href}>
                 <Icon className="size-3.5 mr-1 shrink-0"/>
                 <span className="text-sm truncate">{label}</span>
             </Link>
