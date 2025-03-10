@@ -5,11 +5,11 @@ import WorkspaceSidebar from "./workspace-sidebar";
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import Sidebar from "./sidebar";
-import Toolbar from "./toolbar";
 import { usePanel } from "@/hooks/use-panel";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Thread } from "@/features/messages/components/thread";
 import { Profile } from "@/features/members/components/profile";
+import { Toolbar } from "./toolbar";
 
 interface WorkspaceIdLayoutProps {
     children: React.ReactNode;
