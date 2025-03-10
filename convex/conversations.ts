@@ -55,12 +55,6 @@ export const createOrGet = mutation({
       memberTwoId: args.memberId,
     });
 
-    const conversation = await ctx.db.get(conversationId);
-
-    if(!conversation) {
-        throw new Error("Conversation not found");
-    }
-
-    return conversation;
+    return conversationId;
   },
 });

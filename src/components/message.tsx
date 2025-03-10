@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { format, isToday, isYesterday } from "date-fns";
 
 import { cn } from "@/lib/utils";
-import { usePanel } from "@/hooks/use-panel"; 
+import { usePanel } from "@/hooks/use-panel";
 import { useConfirm } from "@/hooks/use-confirm";
 
 import { useUpdateMessage } from "@/features/messages/api/use-update-message";
@@ -17,6 +17,7 @@ import { Reactions } from "./reactions";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import { Doc, Id } from "../../convex/_generated/dataModel";
+import { ThreadBar } from "./thread-bar";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -43,6 +44,7 @@ interface MessageProps {
     threadCount?: number;
     threadImage?: string;
     threadTimestamp?: number;
+    threadName?: string;
     setEditingId: (id: Id<"messages"> | null) => void;
 }
 
@@ -67,9 +69,10 @@ export const Message = ({
     hideThreadButton,
     threadCount,
     threadImage,
+    threadName,
     threadTimestamp,
 }: MessageProps) => {
-    const { parentMessageId ,onOpenMessage, onClose } = usePanel();
+    const { parentMessageId, onOpenMessage, onClose } = usePanel();
 
     const [ConfirmDialog, confirm] = useConfirm(
         "Delete message",
@@ -79,7 +82,7 @@ export const Message = ({
     const { mutate: updateMessage, isPending: isUpdatingMessage } = useUpdateMessage();
     const { mutate: removeMessage, isPending: isRemovingMessage } = useRemoveMessage();
     const { mutate: toggleReaction, isPending: isTogellingReaction } = useToggleReaction();
-    
+
     const isPending = isUpdatingMessage;
 
     const handleReaction = (value: string) => {
@@ -120,7 +123,7 @@ export const Message = ({
             }
         });
     };
- 
+
     if (isCompact) {
         return (
             <>
@@ -154,6 +157,13 @@ export const Message = ({
                                     <span className="text-xs text-muted-foreground">(edited)</span>
                                 ) : null}
                                 <Reactions data={reactions} onChange={handleReaction} />
+                                <ThreadBar
+                                    count={threadCount}
+                                    image={threadImage}
+                                    name={threadName}
+                                    timeStamp={threadTimestamp}
+                                    onClick={() => onOpenMessage(id)}
+                                />
                             </div>
                         )}
                     </div>
@@ -194,7 +204,7 @@ export const Message = ({
                     </button>
                     {isEditing ? (
                         <div className="w-full h-full">
-                            <Editor 
+                            <Editor
                                 onSubmit={handleUpdate}
                                 disabled={isPending}
                                 defaultValue={JSON.parse(body)}
@@ -202,10 +212,10 @@ export const Message = ({
                                 variant="update"
                             />
                         </div>
-                    ): (
+                    ) : (
                         <div className="flex flex-col w-full overflow-hidden">
                             <div className="text-sm">
-                                <button onClick={() => {}} className="font-bold text-primary hover:underline">
+                                <button onClick={() => { }} className="font-bold text-primary hover:underline">
                                     {authorName}
                                 </button>
                                 <span>&nbsp;&nbsp;</span>
@@ -219,8 +229,15 @@ export const Message = ({
                             <Thumbnail url={image} />
                             {updatedAt ? (
                                 <span className="text-xs text-muted-foreground">(edited)</span>
-                            ): null}
+                            ) : null}
                             <Reactions data={reactions} onChange={handleReaction} />
+                            <ThreadBar
+                                count={threadCount}
+                                image={threadImage}
+                                name={threadName}
+                                timeStamp={threadTimestamp}
+                                onClick={() => onOpenMessage(id)}
+                            />
                         </div>
                     )}
                 </div>
