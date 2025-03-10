@@ -23,6 +23,9 @@ import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useCurrentMember } from "../api/use-current-members";
 import { useGetMember } from "../api/use-get-member";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useUpdateMember } from "../api/use-update-member";
+import { useRemoveMember } from "../api/use-remove-member";
+import { useRouter } from "next/navigation";
 
 interface ProfileProps {
     memberId: Id<"members">;
@@ -30,11 +33,14 @@ interface ProfileProps {
 }
 
 export const Profile = ({ memberId, onClose }: ProfileProps) => {
+    const router = useRouter();    
     const workspaceId = useWorkspaceId();
-    const currentMember = useCurrentMember({ workspaceId });
-    const getMember = useGetMember({ id: memberId });
-    // const updateMember = useUpdateMember();
-    // const removeMember = useRemoveMember();
+
+    const { data: currentMember, isLoading: isLoadingCurrentMember } = useCurrentMember({ workspaceId });
+    const { data: member, isLoading: isLoadingMember} = useGetMember({ id: memberId });
+
+    const { mutate: updateMember, isPending: isUpdatingMember } = useUpdateMember();
+    const { mutate: removeMember, isPending: isRemovingMember } = useRemoveMember();
 
     const [ConfirmLeaveDialog, confirmLeave] = useConfirm(
         "Leave workspace",
@@ -49,59 +55,57 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         "Are you sure you want to change this member's role?"
     );
 
-    // const handleRemove = async () => {
-    //     const ok = await confirmRemove();
-    //     if (!ok) return;
-    //     removeMember
-    //         .mutateAsync({
-    //             id: memberId,
-    //         })
-    //         .then(() => {
-    //             toast.success("Member removed");
-    //             onClose();
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //             toast.error("Failed to remove member");
-    //         });
-    // };
+    const onRemove = async () => {
+        const ok = await confirmRemove();
 
-    // const handleLeave = async () => {
-    //     const ok = await confirmLeave();
-    //     if (!ok) return;
-    //     removeMember
-    //         .mutateAsync({
-    //             id: memberId,
-    //         })
-    //         .then(() => {
-    //             toast.success("You left the workspace");
-    //             onClose();
-    //         })
-    //         .catch((error: any) => {
-    //             console.error(error);
-    //             toast.error("Failed to leave the workspace");
-    //         });
-    // };
+        if(!ok) return;
 
-    // const handleRoleChange = async (role: "admin" | "member") => {
-    //     const ok = await confirmChangeRole();
-    //     if (!ok) return;
-    //     updateMember
-    //         .mutateAsync({
-    //             id: memberId,
-    //             role,
-    //         })
-    //         .then(() => {
-    //             toast.success("Role changed");
-    //             onClose();
-    //         })
-    //         .catch((error: any) => {
-    //             console.error(error);
-    //             toast.error("Failed to changed role");
-    //         });
-    // };
+        removeMember({ id: memberId }, {
+            onSuccess: () => {
+                toast.success("Member removed");
+                onClose();
+            },
+            onError: () => {
+                toast.error("Failed to remove member");
+            }
+        })
+    } 
 
-    if (getMember.isLoading || currentMember.isLoading) {
+    const onLeave = async () => {
+        const ok = await confirmLeave();
+
+        if (!ok) return;
+
+        removeMember({ id: memberId }, {
+            onSuccess: () => {
+                router.replace("/");
+                toast.success("You left the workspace");
+                onClose();
+            },
+            onError: () => {
+                toast.error("Failed to leave the workspace");
+            }
+        })
+    } 
+
+    const onUpdate = async (role: "admin" | "member") => {
+        const ok = await confirmChangeRole();
+
+        if (!ok) return;
+
+        updateMember({ id: memberId, role }, {
+            onSuccess: () => {
+                toast.success("Role changed");
+                onClose();
+            },
+            onError: () => {
+                toast.error("Failed to change role");
+            }
+        })
+    } 
+
+
+    if (isLoadingMember || isLoadingCurrentMember) {
         return (
             <div className="h-full flex flex-col">
                 <div className="flex justify-between items-center h-[49px] px-4 border-b">
@@ -117,7 +121,7 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
         );
     }
 
-    if (!getMember.data) {
+    if (!member) {
         return (
             <div className="h-full flex flex-col">
                 <div className="flex justify-between items-center h-[49px] px-4 border-b">
@@ -148,29 +152,29 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
                 </div>
                 <div className="flex flex-col items-center justify-center p-4">
                     <Avatar className="max-w-[256px] max-h-[256px] size-full">
-                        <AvatarImage src={getMember.data.user.image} />
+                        <AvatarImage src={member.user.image} />
                         <AvatarFallback className="aspect-square text-6xl">
-                            {getMember.data.user.name?.charAt(0).toUpperCase() || "M"}
+                            {member.user.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                 </div>
                 <div className="flex flex-col p-4">
-                    <p className="text-xl font-bold">{getMember.data.user.name}</p>
-                    {currentMember.data?.role === "admin" &&
-                        currentMember.data?._id !== memberId && (
+                    <p className="text-xl font-bold">{member.user.name}</p>
+                    {currentMember?.role === "admin" &&
+                        currentMember?._id !== memberId && (
                             <div className="flex items-center gap-2 mt-4">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="outline" className="w-full capitalize">
-                                            {getMember.data.role} <ChevronDownIcon />
+                                            {member.role} <ChevronDownIcon />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-full">
                                         <DropdownMenuRadioGroup
-                                            value={getMember.data.role}
-                                            // onValueChange={(role) =>
-                                            //     handleRoleChange(role as "admin" | "member")
-                                            // }
+                                            value={member.role}
+                                            onValueChange={(role) =>
+                                                onUpdate(role as "admin" | "member")
+                                             }
                                         >
                                             <DropdownMenuRadioItem value="admin">
                                                 Admin
@@ -184,19 +188,19 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
                                 <Button
                                     variant="outline"
                                     className="w-full"
-                                    // onClick={handleRemove}
+                                    onClick={onRemove}
                                 >
                                     Remove
                                 </Button>
                             </div>
                         )}
-                    {currentMember.data?.role !== "admin" &&
-                        currentMember.data?._id === memberId && (
+                    {currentMember?.role !== "admin" &&
+                        currentMember?._id === memberId && (
                             <div className="mt-4">
                                 <Button
                                     variant="outline"
                                     className="w-full"
-                                    // onClick={handleLeave}
+                                    onClick={onLeave}
                                 >
                                     Leave
                                 </Button>
@@ -215,10 +219,10 @@ export const Profile = ({ memberId, onClose }: ProfileProps) => {
                                 Email Address
                             </p>
                             <Link
-                                href={`mailto:${getMember.data.user.email}`}
+                                href={`mailto:${member.user.email}`}
                                 className="text-sm hover:underline text-[#1264a3]"
                             >
-                                {getMember.data.user.email}
+                                {member.user.email}
                             </Link>
                         </div>
                     </div>
