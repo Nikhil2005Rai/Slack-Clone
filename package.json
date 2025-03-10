@@ -25,6 +25,7 @@
     "cmdk": "1.0.0",
     "convex": "^1.17.4",
     "date-fns": "^4.1.0",
+    "emoji-picker-react": "^4.12.0",
     "jotai": "^2.11.0",
     "lucide-react": "^0.469.0",
     "next": "15.1.3",
