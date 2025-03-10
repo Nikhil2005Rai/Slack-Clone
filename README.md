@@ -42,7 +42,8 @@ Ensure you have Node.js and npm/yarn installed.
    ```
 
 ## 📸 Screenshots
-![Slack Clone UI](https://your-image-link.com)
+![Slack Clone UI](![Screenshot 2025-03-10 143752](https://github.com/user-attachments/assets/4faf2a0c-abc8-4226-93c7-53193edbc38b)
+)
 
 ## 🤝 Contributing
 Contributions are welcome! Please follow these steps:
