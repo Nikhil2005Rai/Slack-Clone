@@ -56,5 +56,5 @@ Contributions are welcome! Please follow these steps:
 This project is licensed under the MIT License.
 
 ---
-Made by [Nikhil Rai](https://github.com/Nikhil2005Rai)
+Made by [Nikhil Rai](https://github.com/Nikhil2005Rai) [Dakshit Jha](https://github.com/Dakshitj14)
 
