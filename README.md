@@ -1,7 +1,7 @@
 # Slack Clone
 
 ## 🚀 Overview
-This is a full-stack Slack clone built using Next.js, Convex, Tailwind CSS, and Shadcn UI. The application features real-time messaging, channel-based communication, emoji reactions, and more.
+This full-stack Slack clone was built using Next.js, Convex, Tailwind CSS, and Shadcn UI. The application features real-time messaging, channel-based communication, emoji reactions, and more.
 
 ## 🎯 Features
 - 🔹 Real-time messaging
